@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SilvaScenes</title>
+<meta name="description" content="SilvaScenes: a benchmark dataset of under-canopy images for instance segmentation of tree species in natural forests. 319 images, 2818 trees, 36 species across Quebec, Canada." />
+<meta property="og:title" content="SilvaScenes: Challenges of Automating Tree Detection and Species Classification from Under-Canopy Images in Natural Forests" />
+<meta property="og:description" content="A benchmark dataset of handheld, ground-level RGB images for instance segmentation of tree species in natural forests." />
+<meta property="og:image" content="static/images/annotated_example.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,100..125,500..800;1,100..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" />
+<link rel="stylesheet" href="static/vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="static/css/index.css" />
+
+<script>
+  /* Light by default; dark only if the visitor chose it before. */
+  try { if (localStorage.getItem("silvascenes-theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); else document.documentElement.setAttribute("data-theme", "light"); } catch (e) { document.documentElement.setAttribute("data-theme", "light"); }
+</script>
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">SilvaScenes</a>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#abstract">Abstract</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#cite">Citation</a>
+    </nav>
+    <button class="theme-toggle" type="button" id="theme-toggle" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-.9-.1-1.4A7 7 0 0 1 12.4 3.1L12 3z"/></svg>
+      <span>Dark</span>
+    </button>
+    <a class="lab-logo" href="https://norlab.ulaval.ca" target="_blank" rel="noopener" aria-label="Northern Robotics Laboratory">
+      <img src="static/images/norlab_logo_acronym_dark.svg" alt="Norlab" />
+    </a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Dataset and benchmark &middot; <span class="nb">under-canopy</span> perception for forestry</p>
+    <h1><i>SilvaScenes</i>: Challenges of Automating Tree Detection and Species Classification from <span class="nb">Under-Canopy</span> Images in Natural Forests</h1>
+
+    <div class="authors">
+      <span>David-Alexandre Duclos<sup>1,*</sup></span>
+      <span>William Guimont-Martin<sup>1</sup></span>
+      <span>Gabriel Jeanson<sup>1</sup></span>
+      <span>Arthur Larochelle-Tremblay<sup>1</sup></span>
+      <span>Martine Lapointe<sup>2</sup></span>
+      <span>Théo Defosse<sup>3</sup></span>
+      <span>Frédéric Moore<sup>3</sup></span>
+      <span>Philippe Nolet<sup>3</sup></span>
+      <span>François Pomerleau<sup>1</sup></span>
+      <span>Philippe Giguère<sup>1,*</sup></span>
+    </div>
+
+    <div class="affils">
+      <span><sup>1</sup> Northern Robotics Laboratory, Université Laval, Québec, QC, Canada</span>
+      <span><sup>2</sup> Département des sciences du bois et de la forêt, Université Laval, Québec, QC, Canada</span>
+      <span><sup>3</sup> Institut des Sciences de la Forêt tempérée, Université du Québec en Outaouais, Ripon, QC, Canada</span>
+      <span><sup>*</sup> Corresponding authors:
+        <a href="mailto:david-alexandre.duclos@norlab.ulaval.ca">david-alexandre.duclos@norlab.ulaval.ca</a>,
+        <a href="mailto:philippe.giguere@ift.ulaval.ca">philippe.giguere@ift.ulaval.ca</a></span>
+    </div>
+
+    <div class="links">
+      <!-- TODO: point to the journal article once published -->
+      <a class="btn" href="https://arxiv.org/abs/2510.09458v2" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8.5 12v1.5h7V12h-7zm0 3.5V17h7v-1.5h-7z"/></svg>
+        Paper <span class="soon">preprint</span>
+      </a>
+      <!-- TODO: replace with <a class="btn" href="..."> when the dataset is released -->
+      <span class="btn is-soon" aria-disabled="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 9.5c0 1.7 3.6 3 8 3s8-1.3 8-3V12c0 1.7-3.6 3-8 3s-8-1.3-8-3V9.5z"/><path d="M4 15.5c0 1.7 3.6 3 8 3s8-1.3 8-3V18c0 1.7-3.6 3-8 3s-8-1.3-8-3v-2.5z"/></svg>
+        Dataset <span class="soon">coming soon</span>
+      </span>
+      <a class="btn" href="https://github.com/norlab-ulaval/SilvaScenes" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Code <span class="soon">coming soon</span>
+      </a>
+    </div>
+
+    <div class="counts" aria-label="Dataset size">
+    <dl>
+      <div><dd>319</dd><dt>images</dt></div>
+      <div><dd>2818</dd><dt>annotated trees</dt></div>
+      <div><dd>36</dd><dt>tree species</dt></div>
+      <div><dd>40</dd><dt>stands</dt></div>
+      <div><dd>11</dd><dt>forests</dt></div>
+      <div><dd>5</dd><dt>bioclimatic domains</dt></div>
+      </dl>
+    </div>
+
+    <figure class="teaser">
+      <button class="zoom" type="button" aria-label="Enlarge the annotated example image">
+        <img src="static/images/annotated_example.jpg" width="2196" height="1646"
+             alt="Under-canopy forest scene with tree trunks outlined in species-specific colours: yellow birch, red spruce, red maple, sugar maple, and eastern hemlock, with callouts for occlusion, a bright area, and a shaded area." />
+      </button>
+      <figcaption>
+        <strong>An annotated image from <em>SilvaScenes</em>.</strong>
+        Every trunk carries a species label from a forestry expert and a pixel-precise segmentation mask.
+        Vegetation occlusion and uneven lighting, as seen here, are typical of natural forests.
+        Masks are colour-coded by species and drawn without interior fill to show the bark and the occlusion.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== ABSTRACT ===================== -->
+<section class="section" id="abstract">
+  <div class="wrap">
+    <div class="split">
+      <div class="section-head">
+        <p class="eyebrow">Abstract</p>
+        <h2>Automating tree detection from <span class="nb">under-canopy</span> images may be feasible, but identifying their species remains an important challenge moving forward.</h2>
+      </div>
+      <div class="prose">
+        <p>Interest in forestry automation is growing alongside rapid advances in deep learning. In particular, tree detection and taxonomic classification are seen as core tasks required for automating field surveys and forestry equipment. These operations must often be performed in <span class="nb">under-canopy</span> settings, which pose challenging conditions for perception systems, including heavy occlusion, variable lighting, and dense vegetation. Despite this necessity, current work has yet to establish the feasibility of simultaneously executing tree detection and taxonomic classification in natural forests, as available datasets primarily focus on urban settings or a limited number of species.</p>
+        <p>In response, we present <em>SilvaScenes</em>, a benchmark dataset of handheld, ground-level RGB images for instance segmentation of tree species in natural forests. Collected across 40 stands, 11 forests, and five bioclimatic domains in Quebec, Canada, our dataset features 2818 trees from 36 species, with segmentation masks for pixel-precise trunk detection and fine-grained species annotations from forestry experts.</p>
+        <p>We demonstrate the relevance and difficult nature of <em>SilvaScenes</em> by evaluating modern deep learning approaches on 1.6&nbsp;MP images of our 21 most common species, showing that while trunk segmentation may be feasible, with a top mean average precision (mAP) of 70.4&nbsp;% and mean average recall (mAR) of 75.9&nbsp;%, species-aware segmentation remains a significant challenge, with a top mAP and mAR of only 12.3&nbsp;% and 58.1&nbsp;%, respectively. Through additional experiments, we highlight key challenges, namely species imbalance, tree occlusion, and generalization to new environments, and show that identification relies mainly on the trunks themselves, with surrounding trees providing additional cues. Meanwhile, higher image resolutions yield significant performance gains and will likely prove fundamental to these tasks moving forward.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DATASET ===================== -->
+<section class="section band" id="dataset">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">The dataset</p>
+      <h2>Natural forests across Quebec, photographed <span class="nb">off-trail</span> and labelled in the field</h2>
+      <p><em>SilvaScenes</em> unifies pixel-precise trunk detection and species classification in images of whole forest scenes. Collected during the summers of 2025 and 2026, it relies on forestry experts for fine-grained identification of a high diversity of species.</p>
+    </div>
+
+    <!-- Map + forests -->
+    <div class="split with-map">
+      <figure>
+        <div class="map-frame">
+          <!-- The static figure is shown until the interactive map loads, and stays if scripts are off. -->
+          <div class="map" id="forest-map" role="region" aria-label="Interactive map of the 11 collection areas">
+            <img src="static/images/collection_map.png" width="2208" height="1264"
+                 alt="Map of southern Quebec showing the 11 collection areas, from Châteauguay and Rigaud near Montreal to Forêt Montmorency and Lac Sept-Îles north of Quebec City, over the five bioclimatic domains." />
+          </div>
+          <p class="map-note" id="map-note" hidden>The basemap could not be loaded here, so only the forest markers are shown.</p>
+          <div class="map-controls" id="map-controls" hidden>
+            <div class="map-domain-ui" id="map-domain-ui" hidden>
+              <label class="map-opacity" for="map-opacity">Bioclimatic domains
+                <input type="range" id="map-opacity" min="0" max="100" step="5" value="60" />
+                <span class="num" id="map-opacity-value">60 %</span>
+              </label>
+              <span class="map-legend">
+                <span><i class="swatch sw-bfwb"></i>Balsam fir&ndash;White birch</span>
+                <span><i class="swatch sw-bfyb"></i>Balsam fir&ndash;Yellow birch</span>
+                <span><i class="swatch sw-smyb"></i>Sugar maple&ndash;Yellow birch</span>
+                <span><i class="swatch sw-smbw"></i>Sugar maple&ndash;Basswood</span>
+                <span><i class="swatch sw-smbh"></i>Sugar maple&ndash;Bitternut hickory</span>
+              </span>
+            </div>
+            <button class="chip" type="button" id="map-reset">Reset view</button>
+          </div>
+        </div>
+        <figcaption>Collection areas span 11 forests across five bioclimatic domains, from the boreal Balsam fir&ndash;White birch domain in the north to the Sugar maple&ndash;Bitternut hickory domain in the south. Select a marker or a row of the table for the details of a forest. Marker positions are approximate. The 40 stands are combined into 21 stand groups for evaluation.</figcaption>
+      </figure>
+      <div class="table-scroll">
+        <table class="compact">
+          <thead>
+            <tr><th>Forest</th><th class="n">Stands</th><th class="n">Images</th><th class="n">Trees</th><th class="n">Species</th></tr>
+          </thead>
+          <tbody>
+            <tr class="forest-row" data-forest="0" tabindex="0"><th>Lac Sept-Îles</th><td class="n">2</td><td class="n">13</td><td class="n">80</td><td class="n">3</td></tr>
+            <tr class="forest-row" data-forest="1" tabindex="0"><th>Forêt Montmorency</th><td class="n">6</td><td class="n">37</td><td class="n">388</td><td class="n">5</td></tr>
+            <tr class="forest-row" data-forest="2" tabindex="0"><th>Duchesnay</th><td class="n">3</td><td class="n">24</td><td class="n">179</td><td class="n">11</td></tr>
+            <tr class="forest-row" data-forest="3" tabindex="0"><th>Mont Bélair</th><td class="n">2</td><td class="n">21</td><td class="n">193</td><td class="n">7</td></tr>
+            <tr class="forest-row" data-forest="4" tabindex="0"><th>Base de plein air</th><td class="n">3</td><td class="n">32</td><td class="n">290</td><td class="n">17</td></tr>
+            <tr class="forest-row" data-forest="5" tabindex="0"><th>St-Augustin</th><td class="n">3</td><td class="n">34</td><td class="n">312</td><td class="n">13</td></tr>
+            <tr class="forest-row" data-forest="6" tabindex="0"><th>Mastigouche</th><td class="n">5</td><td class="n">26</td><td class="n">229</td><td class="n">12</td></tr>
+            <tr class="forest-row" data-forest="7" tabindex="0"><th>Leclercville</th><td class="n">5</td><td class="n">37</td><td class="n">342</td><td class="n">17</td></tr>
+            <tr class="forest-row" data-forest="8" tabindex="0"><th>Ripon</th><td class="n">4</td><td class="n">27</td><td class="n">238</td><td class="n">14</td></tr>
+            <tr class="forest-row" data-forest="9" tabindex="0"><th>Rigaud</th><td class="n">4</td><td class="n">54</td><td class="n">466</td><td class="n">16</td></tr>
+            <tr class="forest-row" data-forest="10" tabindex="0"><th>Châteauguay</th><td class="n">3</td><td class="n">14</td><td class="n">101</td><td class="n">12</td></tr>
+            <tr class="ours"><th>Total</th><td class="n">40</td><td class="n">319</td><td class="n">2818</td><td class="n">36</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Species explorer -->
+    <div class="block">
+      <div class="prose">
+        <h3>36 species, collected across different environments</h3>
+        <p>The dataset targets a high diversity of species. Many of them are present across multiple stands, forests, and bioclimatic domains, which increases both the environmental and intraspecific diversity of the dataset.</p>
+      </div>
+      <div class="explorer">
+        <div class="explorer-controls">
+          <div class="ctl-row">
+            <span class="ctl-label" id="lbl-filter">Filter by domain</span>
+            <div class="chips" id="filter-options" role="group" aria-labelledby="lbl-filter"></div>
+          </div>
+          <div class="ctl-row" id="ctl-forest" hidden>
+            <span class="ctl-label" id="lbl-forest">Filter by forest</span>
+            <div class="chips" id="forest-options" role="group" aria-labelledby="lbl-forest"></div>
+          </div>
+          <div class="ctl-row">
+            <span class="ctl-label" id="lbl-sort">Sorting</span>
+            <div class="chips" role="group" aria-labelledby="lbl-sort">
+              <button class="chip" type="button" id="sort-tax" data-sort="taxonomy" aria-pressed="true">By taxonomy</button>
+              <button class="chip" type="button" id="sort-count" data-sort="count" aria-pressed="false">By count</button>
+            </div>
+          </div>
+          <div class="ctl-row">
+            <span class="ctl-label" id="lbl-group">Classes</span>
+            <div class="chips" role="group" aria-labelledby="lbl-group">
+              <button class="chip" type="button" id="group-species" data-group="species" aria-pressed="true">All 36 species</button>
+              <button class="chip" type="button" id="group-classes" data-group="classes" aria-pressed="false">21 species + Other class</button>
+            </div>
+          </div>
+        </div>
+        <div class="explorer-cols" id="species-cols"></div>
+        <div class="legend-note">
+          <span><i class="mark in"></i>One of the 21 species evaluated as its own class</span>
+          <span><i class="mark"></i>Grouped under the &ldquo;Other&rdquo; class in the benchmark (fewer than 16 trees, or fewer than 8 in a training set)</span>
+          <span>19 more trees are labelled Unknown (damaged, diseased, or dead) and are also grouped under the &ldquo;Other&rdquo; class in the benchmark.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bark mosaic -->
+    <figure>
+      <button class="zoom" type="button" aria-label="Enlarge the bark mosaic">
+        <img src="static/images/bark_mosaic.jpg" width="2600" height="1148" loading="lazy"
+             alt="Two bark crops for each of the 21 most common species, from yellow birch to eastern hemlock, showing how varied bark is within a species and how similar it can be between species." />
+      </button>
+      <figcaption>Bark from the 21 most common species, cropped from the full 102&nbsp;MP images. Maples share many characteristics with other species such as red oak and white elm, and vary widely among themselves with size and age. Brightness and green hue were adjusted to account for scene illumination and colour bleeding from dense canopies.</figcaption>
+    </figure>
+
+    <!-- Protocol + stats -->
+    <div class="block">
+      <div class="block prose-wide">
+        <h3>How it was collected and annotated</h3>
+        <ul class="facts">
+          <li><b>Camera</b><span>Handheld Fujifilm GFX100S, 102&nbsp;MP (11&nbsp;648&nbsp;&times;&nbsp;8736&nbsp;px), with a GF23mmF4 lens and a 99.9° diagonal field of view.</span></li>
+          <li><b>Scenes</b><span>Mainly <span class="nb">off-trail</span> and in leaf-on conditions, where foliage below the canopy is dense. The number of trees per image and their position vary.</span></li>
+          <li><b>Species labels</b><span>Obtained mainly <em>in situ</em> by forestry experts, who could rely on bark, leaves, shoots, cones, shape, and the environment.</span></li>
+          <li><b>Masks</b><span>Instance segmentation of trunks, drawn and revised by hand on the full-resolution images. Sections hidden by branches or foliage are labelled when their shape can be inferred.</span></li>
+          <li><b>Minimum size</b><span>Trees narrower than 128&nbsp;px (median width) in the full-resolution images are not annotated.</span></li>
+          <li><b>Occlusion</b><span>Each tree has an occlusion level, estimated visually from the images in four bins from 0 to 100&nbsp;%.</span></li>
+        </ul>
+      </div>
+      <figure>
+        <div class="plate">
+          <button class="zoom" type="button" aria-label="Enlarge the dataset statistics">
+            <img src="static/images/dataset_statistics.png" width="2170" height="525" loading="lazy"
+                 alt="Four histograms: trees per image with a median of 9, species per image with a median of 3, tree width in pixels with a median of 218, and tree occlusion with a median in the 0 to 25 percent bin." />
+          </button>
+        </div>
+        <figcaption>Left to right: trees per image (median 9), species per image (median 3), tree width in the full-resolution images (median 218&nbsp;px, log scale), and tree occlusion. Nearly half of the trees are occluded by at least 25&nbsp;%, and around one in eight by 75&nbsp;% or more.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Comparison -->
+    <div class="block">
+      <div class="prose">
+        <h3>How it compares</h3>
+        <p>Earlier <span class="nb">under-canopy</span> image datasets either lack species labels or focus on close-range, single-tree classification. <em>SilvaScenes</em> offers densely annotated scenes with instance masks and species labels for trees in natural forests.</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Dataset</th><th class="c">Detection</th><th class="c">Segmentation</th><th class="c">Classification</th><th class="n">Images</th><th class="n">Trees</th><th class="n">Species (evaluated)</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>ForTrunkDet</th><td class="c yes">&#10003;</td><td class="c no">&ndash;</td><td class="c no">&ndash;</td><td class="n">2716</td><td class="n">&ndash;</td><td class="n">&ndash;</td></tr>
+            <tr><th>CanaTree100</th><td class="c yes">&#10003;</td><td class="c yes">&#10003;</td><td class="c no">&ndash;</td><td class="n">100</td><td class="n">920</td><td class="n">&ndash;</td></tr>
+            <tr><th>FinnWoodlands</th><td class="c yes">&#10003;</td><td class="c yes">&#10003;</td><td class="c yes">&#10003;</td><td class="n">300</td><td class="n">2562</td><td class="n">&ndash;</td></tr>
+            <tr><th>BarkNet 1.0</th><td class="c no">&ndash;</td><td class="c no">&ndash;</td><td class="c yes">&#10003;</td><td class="n">23&nbsp;528</td><td class="n">1006</td><td class="n">23 (20)</td></tr>
+            <tr><th>BARK-KR</th><td class="c no">&ndash;</td><td class="c no">&ndash;</td><td class="c yes">&#10003;</td><td class="n">6918</td><td class="n">&ndash;</td><td class="n">54 (23)</td></tr>
+            <tr class="ours"><th><em>SilvaScenes</em> (ours)</th><td class="c yes">&#10003;</td><td class="c yes">&#10003;</td><td class="c yes">&#10003;</td><td class="n">319</td><td class="n">2818</td><td class="n">36 (21)</td></tr>
+          </tbody>
+          <caption>Publicly available datasets for tree detection or taxonomic classification from <span class="nb">under-canopy</span> images in natural environments.</caption>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CITATION ===================== -->
+<section class="section" id="cite">
+  <div class="wrap">
+    <div class="block">
+      <h2>Citation</h2>
+      <div class="prose"><p>If you found our work interesting or useful, feel free to share it and cite it. Thanks!</p></div>
+      <p class="notice">Our work should be published shortly. Until then, please cite the arXiv preprint below. Note that the preprint does not include our up-to-date dataset and results.</p>
+      <div class="cite-box">
+        <div class="cite-head"><span>BibTeX</span><button class="copy" type="button" id="copy-bibtex">Copy</button></div>
+        <!-- TODO: replace with the journal reference once published -->
+        <pre id="bibtex-text">@misc{duclos2026silvascenes,
+  title         = {SilvaScenes: Tree Detection and Species Classification from Under-Canopy Images in Natural Forests},
+  author        = {Duclos, David-Alexandre and Guimont-Martin, William and Jeanson, Gabriel and Larochelle-Tremblay, Arthur and Lapointe, Martine and Defosse, Th{\'e}o and Moore, Fr{\'e}d{\'e}ric and Nolet, Philippe and Pomerleau, Fran{\c{c}}ois and Gigu{\`e}re, Philippe},
+  year          = {2026},
+  eprint        = {2510.09458},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2510.09458v2},
+  note          = {arXiv:2510.09458v2}
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="wrap">
+    <p><a href="https://norlab.ulaval.ca" target="_blank" rel="noopener">Northern Robotics Laboratory (Norlab)</a>, Université Laval, Québec, QC, Canada.</p>
+  </div>
+</footer>
+
+<dialog class="lightbox" id="lightbox" aria-label="Enlarged figure">
+  <form method="dialog"><button type="submit">Close</button></form>
+  <img src="" alt="" />
+</dialog>
+
+<script src="static/vendor/leaflet/leaflet.js"></script>
+<script src="static/js/index.js"></script>
+
+</body></html>
